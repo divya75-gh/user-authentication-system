@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Signup</title>
+</head>
+
+<body>
+  <h2>Create Account</h2>
+
+  <input id="name" placeholder="Name" /><br><br>
+  <input id="email" placeholder="Email" /><br><br>
+  <input id="password" placeholder="Password" type="password" /><br><br>
+
+  <button onclick="signup()">Sign Up</button>
+
+  <p id="error" style="color:red;"></p>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBcqCClYLTwCydPQ3SPVFu4PN3atYgcQcQ",
+      authDomain: "simplepages-c2fae.firebaseapp.com",
+      projectId: "simplepages-c2fae",
+      storageBucket: "simplepages-c2fae.firebasestorage.app",
+      messagingSenderId: "1082277517664",
+      appId: "1:1082277517664:web:236e4d1aa2e50806a66605",
+      measurementId: "G-Q6RTPEQ7FC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    window.signup = function () {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const errorMsg = document.getElementById("error");
+
+      errorMsg.textContent = "";
+
+      if (!name || !email || !password) {
+        errorMsg.textContent = "All fields are required!";
+        return;
+      }
+
+      if (password.length < 6) {
+        errorMsg.textContent = "Password must be at least 6 characters!";
+        return;
+      }
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+
+          set(ref(db, "users/" + user.uid), {
+            name: name,
+            email: email
+          });
+
+          alert("Signup Successful!");
+          window.location.href = "login.html";
+        })
+        .catch((error) => {
+          errorMsg.textContent = error.message;
+        });
+    };
+  </script>
+</body>
+</html>

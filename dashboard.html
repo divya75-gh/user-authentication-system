@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+</head>
+
+<body>
+  <h1 id="welcome">Welcome 🎉</h1>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBcqCClYLTwCydPQ3SPVFu4PN3atYgcQcQ",
+      authDomain: "simplepages-c2fae.firebaseapp.com",
+      projectId: "simplepages-c2fae",
+      storageBucket: "simplepages-c2fae.firebasestorage.app",
+      messagingSenderId: "1082277517664",
+      appId: "1:1082277517664:web:236e4d1aa2e50806a66605",
+      measurementId: "G-Q6RTPEQ7FC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const welcomeText = document.getElementById("welcome");
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        get(ref(db, "users/" + user.uid)).then((snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            welcomeText.textContent = `Welcome, ${data.name} 🎉`;
+          }
+        });
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+</body>
+</html>
